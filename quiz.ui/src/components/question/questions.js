@@ -1,37 +1,21 @@
 import React from 'react';
-import SimpleButton from '../button/button';
-import Grid from '@material-ui/core/Grid';
+import './question.css';
 
 class Question extends React.Component {
 
-    handleAnswerClick(questionId) {
-        const answer = this.props.answers.find(x => x.id === questionId);
-        const correct = answer.id === this.props.correctAnswerId;
-        if (correct) {
-            console.log('Correct');
-        }
-        else {
-            console.log('incorrect');
-        }
-    }
-
     render() {
         return (
-            <div>
-                <label>{this.props.question}</label>
-                <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
-                >
-                    {this.props.answers.map((answer, index) => {
+                <div>
+                    <h2>{this.props.question}</h2>
+                    {this.props.answers.map((answer) => {
                         return (
-                            <SimpleButton item key={answer.id} onClick={() => this.handleAnswerClick(answer.id)} text={answer.text}></SimpleButton>
+                            <div key={answer.id} className={"choice-container " + answer.class} onClick={() => this.props.handleAnswerClick(answer.id)}>
+                            <p className="choice-prefix">A</p>
+                            <p className="choice-text">{answer.text}</p>
+                        </div>
                         );
                     })}
-                </Grid>
-            </div>
+                </div>
         );
     }
 }
