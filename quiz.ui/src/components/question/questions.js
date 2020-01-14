@@ -10,7 +10,7 @@ class Question extends React.Component {
                     {this.props.answers.map((answer) => {
                         return (
                             <div key={answer.id} className={"choice-container " + answer.class} onClick={() => this.props.handleAnswerClick(answer.id)}>
-                            <p className="choice-prefix">A</p>
+                            <p className="choice-prefix">{answer.prefix}</p>
                             <p className="choice-text">{answer.text}</p>
                         </div>
                         );

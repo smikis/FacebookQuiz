@@ -1,7 +1,8 @@
 import React from 'react';
 import './app.css';
 import Game from '../game/game';
-import Home from '../home/home'
+import Home from '../home/home';
+import End from '../end/end';
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,6 +21,9 @@ function App() {
           </Route>
           <Route path="/home">
             <HomeRoute />
+          </Route>
+          <Route path="/end">
+            <End />
           </Route>
         </Switch>
       </div>

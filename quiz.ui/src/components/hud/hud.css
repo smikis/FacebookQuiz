@@ -11,3 +11,11 @@
 .hud-main-text{
     text-align: center;
 }
+
+.timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 4rem;
+    color: #63a5eb;
+  }
