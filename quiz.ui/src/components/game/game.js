@@ -29,8 +29,8 @@ class Game extends React.Component {
 
         this.state = {
             question: '',
-            answers: [],
-            correctAnswerId: '',
+            options: [],
+            correctOptionId: '',
             acceptingAnswers: false
         };
     }
@@ -40,9 +40,9 @@ class Game extends React.Component {
         try {
             const question = await this.getQuestion();
             this.setState({
-                question: question.question,
-                answers: question.answers,
-                correctAnswerId: question.correctAnswerId,
+                question: question.text,
+                options: question.options,
+                correctOptionId: question.correctOptionId,
                 acceptingAnswers: true
             });
         } catch (error) {
@@ -51,7 +51,7 @@ class Game extends React.Component {
     }
 
     async getQuestion() {
-        const response = await fetch(`http://localhost:3001/question`);
+        const response = await fetch(`https://localhost:44338/api/question/5`);
         const json = await response.json();
 
         this.currentQuestion++;
@@ -64,19 +64,19 @@ class Game extends React.Component {
 
         this.setState({
             question: this.state.question,
-            answers: this.state.answers,
-            correctAnswerId: this.state.correctAnswerId,
+            options: this.state.options,
+            correctOptionId: this.state.correctOptionId,
             acceptingAnswers: false
         });
 
-        const answers = this.state.answers.slice();
-        const answer = answers.find(x => x.id === this.state.correctAnswerId);
+        const options = this.state.options.slice();
+        const answer = options.find(x => x.id === this.state.correctOptionId);
         answer.class = 'correct-answer';
 
         this.setState({
             question: this.state.question,
-            answers: answers,
-            correctAnswerId: this.state.correctAnswerId
+            options: options,
+            correctOptionId: this.state.correctOptionId
         });
 
         setTimeout(async () => {
@@ -86,9 +86,9 @@ class Game extends React.Component {
             else {
                 const newQuestion = await this.getQuestion();
                 this.setState({
-                    question: newQuestion.question,
-                    answers: newQuestion.answers,
-                    correctAnswerId: newQuestion.correctAnswerId,
+                    question: newQuestion.text,
+                    options: newQuestion.options,
+                    correctOptionId: newQuestion.correctOptionId,
                     acceptingAnswers: true
                 });
             }
@@ -102,14 +102,14 @@ class Game extends React.Component {
 
         this.setState({
             question: this.state.question,
-            answers: this.state.answers,
-            correctAnswerId: this.state.correctAnswerId,
+            options: this.state.options,
+            correctOptionId: this.state.correctOptionId,
             acceptingAnswers: false
         });
 
-        const answers = this.state.answers.slice();
+        const answers = this.state.options.slice();
         const answer = answers.find(x => x.id === questionId);
-        const correct = answer.id === this.state.correctAnswerId;
+        const correct = answer.id === this.state.correctOptionId;
 
 
         if (correct) {
@@ -124,8 +124,8 @@ class Game extends React.Component {
 
         this.setState({
             question: this.state.question,
-            answers: answers,
-            correctAnswerId: this.state.correctAnswerId
+            options: answers,
+            correctOptionId: this.state.correctOptionId
         });
 
         setTimeout(async () => {
@@ -135,9 +135,9 @@ class Game extends React.Component {
             else {
                 const newQuestion = await this.getQuestion();
                 this.setState({
-                    question: newQuestion.question,
-                    answers: newQuestion.answers,
-                    correctAnswerId: newQuestion.correctAnswerId,
+                    question: newQuestion.text,
+                    options: newQuestion.options,
+                    correctOptionId: newQuestion.correctOptionId,
                     acceptingAnswers: true
                 });
             }
@@ -156,7 +156,7 @@ class Game extends React.Component {
                     onComplete={this.onTimerComplete.bind(this)}
                     timerIsRunning={this.state.acceptingAnswers}
                     resetTimerKey={this.currentQuestion} />
-                <Question question={this.state.question} answers={this.state.answers} handleAnswerClick={this.handleAnswerClick.bind(this)} />
+                <Question question={this.state.question} answers={this.state.options} handleAnswerClick={this.handleAnswerClick.bind(this)} />
             </div>
         );
     }
