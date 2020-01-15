@@ -1,0 +1,12 @@
+{
+    "hud": {
+        "question": [
+            "Question",
+            "Klausimai"
+        ],
+        "correctAnswers": [
+            "Correct answers",
+            "Teisingai atsakyta"
+        ]
+    }
+}

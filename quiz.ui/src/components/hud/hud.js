@@ -1,6 +1,7 @@
 import React from 'react';
 import './hud.css';
 import { CountdownCircleTimer } from 'react-countdown-circle-timer';
+import { Translate } from "react-localize-redux";
 
 class Hud extends React.Component {
 
@@ -14,12 +15,16 @@ class Hud extends React.Component {
         return (
             <div id="hud">
                 <div id="hud-item">
-                    <p className="hud-prefix">Question</p>
+                    <p className="hud-prefix"><Translate id="hud.question" /></p>
                     <h1 className="hud-main-text">{this.props.currentQuestion + '/' + this.props.totalQuestions}</h1>
                 </div>
                 <div id="hud-item">
                     <p className="hud-prefix">Correct answers</p>
                     <h1 className="hud-main-text">{this.props.correctAnswers}</h1>
+                </div>
+                <div id="hud-item">
+                    <p className="hud-prefix">Points</p>
+                    <h1 className="hud-main-text">{this.props.points}</h1>
                 </div>
                 <div id="hud-item">
                     <CountdownCircleTimer

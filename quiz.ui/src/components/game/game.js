@@ -2,62 +2,66 @@ import React from 'react';
 import './game.css';
 import Question from '../question/questions';
 import Hud from '../hud/hud';
-import {
-    withRouter
-  } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { renderToStaticMarkup } from "react-dom/server";
+import globalTranslations from "../../translations/globalTranslations.json";
+import { withLocalize } from "react-localize-redux";
 
 class Game extends React.Component {
     //CONSTANTS
-    totalQuestions = 3;
+    totalQuestions = 10;
 
     currentQuestion = 0;
     correctAnswers = 0;
+    points = 0;
 
     constructor(props) {
         super(props);
 
-        const question = this.getQuestion();
+        props.initialize({
+            languages: [
+              { name: "English", code: "en" },
+              { name: "French", code: "fr" }
+            ],
+            translation: globalTranslations,
+            options: { renderToStaticMarkup }
+          });
+
         this.state = {
-            question: question.question,
-            answers: question.answers,
-            correctAnswerId: question.correctAnswerId,
-            acceptingAnswers: true
+            question: '',
+            answers: [],
+            correctAnswerId: '',
+            acceptingAnswers: false
         };
     }
 
-    getQuestion() {
+
+    async componentDidMount() {
+        try {
+            const question = await this.getQuestion();
+            this.setState({
+                question: question.question,
+                answers: question.answers,
+                correctAnswerId: question.correctAnswerId,
+                acceptingAnswers: true
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async getQuestion() {
+        const response = await fetch(`http://localhost:3001/question`);
+        const json = await response.json();
+
         this.currentQuestion++;
 
-        const question = {
-            question: 'In what continent is located Lithuania?' + Math.random(),
-            answers: [
-                {
-                    id: 1,
-                    text: "Europe",
-                    prefix: 'A'
-                },
-                {
-                    id: 2,
-                    text: "Asia",
-                    prefix: 'B'
-                },
-                {
-                    id: 3,
-                    text: "Africa",
-                    prefix: 'C'
-                },
-                {
-                    id: 4,
-                    text: "Oceania",
-                    prefix: 'D'
-                }
-            ],
-            correctAnswerId: 1
-        };
-        return question;
+        return json;
     }
 
     onTimerComplete() {
+        this.points--;
+
         this.setState({
             question: this.state.question,
             answers: this.state.answers,
@@ -75,12 +79,12 @@ class Game extends React.Component {
             correctAnswerId: this.state.correctAnswerId
         });
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (this.currentQuestion === this.totalQuestions) {
-                this.props.history.push('/end');
+                this.props.history.push(`/end?score=${this.points}`);
             }
             else {
-                const newQuestion = this.getQuestion();
+                const newQuestion = await this.getQuestion();
                 this.setState({
                     question: newQuestion.question,
                     answers: newQuestion.answers,
@@ -92,7 +96,7 @@ class Game extends React.Component {
     }
 
     handleAnswerClick(questionId) {
-        if (!this.acceptingAnswers) {
+        if (!this.state.acceptingAnswers) {
             return;
         }
 
@@ -107,10 +111,15 @@ class Game extends React.Component {
         const answer = answers.find(x => x.id === questionId);
         const correct = answer.id === this.state.correctAnswerId;
 
-        answer.class = 'incorrect-answer';
+
         if (correct) {
             answer.class = 'correct-answer';
             this.correctAnswers++;
+            this.points++;
+        }
+        else {
+            answer.class = 'incorrect-answer';
+            this.points--;
         }
 
         this.setState({
@@ -119,12 +128,12 @@ class Game extends React.Component {
             correctAnswerId: this.state.correctAnswerId
         });
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (this.currentQuestion === this.totalQuestions) {
-                this.props.history.push('/end');
+                this.props.history.push(`/end?score=${this.points}`);
             }
             else {
-                const newQuestion = this.getQuestion();
+                const newQuestion = await this.getQuestion();
                 this.setState({
                     question: newQuestion.question,
                     answers: newQuestion.answers,
@@ -140,16 +149,17 @@ class Game extends React.Component {
         return (
             <div className="container justify-center flex-column">
                 <Hud
-                currentQuestion={this.currentQuestion}
-                totalQuestions={this.totalQuestions}
-                correctAnswers={this.correctAnswers}
-                onComplete={this.onTimerComplete.bind(this)}
-                timerIsRunning={this.state.acceptingAnswers}
-                resetTimerKey={this.currentQuestion}/>
+                    currentQuestion={this.currentQuestion}
+                    totalQuestions={this.totalQuestions}
+                    points={this.points}
+                    correctAnswers={this.correctAnswers}
+                    onComplete={this.onTimerComplete.bind(this)}
+                    timerIsRunning={this.state.acceptingAnswers}
+                    resetTimerKey={this.currentQuestion} />
                 <Question question={this.state.question} answers={this.state.answers} handleAnswerClick={this.handleAnswerClick.bind(this)} />
             </div>
         );
     }
 }
 
-export default withRouter(Game);
+export default withLocalize(withRouter(Game));

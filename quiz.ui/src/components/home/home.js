@@ -7,8 +7,10 @@ class Home extends React.Component {
         return (
             <div className="container">
                 <div id="home" className="flex-center flex-column">
-                    <h1>Quiz</h1>
-                    <Link class="btn" to="/question">Question</Link>
+                    <h1>Quiz Land</h1>
+                    <Link class="btn" to="/question">Play</Link>
+                    <Link class="btn" to="/question">Leaderboard</Link>
+                    <Link class="btn" to="/settings">Settings</Link>
                 </div>
             </div>
         );
